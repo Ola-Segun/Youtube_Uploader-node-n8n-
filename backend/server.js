@@ -8,12 +8,15 @@ const rateLimit = require('express-rate-limit');
 const session = require('express-session');
 const passport = require('passport');
 const { sequelize } = require('./src/config/database');
+const { setIo } = require('./src/services/socketService');
 
 const app = express();
 const server = http.createServer(app);
 const io = socketIo(server, {
   cors: { origin: process.env.FRONTEND_URL || 'http://localhost:3000' }
 });
+console.log('io initialized in server.js:', typeof io, io ? 'defined' : 'undefined');
+setIo(io);
 
 app.use(helmet());
 app.use(cors({ origin: process.env.FRONTEND_URL || 'http://localhost:3000' }));
@@ -32,7 +35,7 @@ const limiter = rateLimit({ windowMs: 15 * 60 * 1000, max: 100 });
 app.use(limiter);
 
 // Routes
-app.use('/api/youtube', require('./src/routes/auth'));
+app.use('/auth/google', require('./src/routes/auth'));
 app.use('/upload', require('./src/routes/upload'));
 app.use('/videos', require('./src/routes/videos'));
 app.use('/internal', require('./src/routes/internal'));
@@ -47,4 +50,4 @@ sequelize.sync().then(() => {
   server.listen(PORT, () => console.log(`Server running on port ${PORT}`));
 });
 
-module.exports = { app, io };
+module.exports = { app };

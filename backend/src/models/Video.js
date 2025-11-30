@@ -9,7 +9,7 @@ const Video = sequelize.define('Video', {
   youtubeId: { type: DataTypes.STRING },
   status: { type: DataTypes.ENUM('pending', 'uploading', 'completed', 'failed'), defaultValue: 'pending' },
   progress: { type: DataTypes.INTEGER, defaultValue: 0 },
-  fileUrl: { type: DataTypes.STRING, allowNull: false },
+  fileUrl: { type: DataTypes.STRING, allowNull: true },
   createdAt: { type: DataTypes.DATE, defaultValue: DataTypes.NOW },
   updatedAt: { type: DataTypes.DATE, defaultValue: DataTypes.NOW }
 });

@@ -6,7 +6,7 @@ const Login = () => {
   const { login } = useAuth();
 
   const handleLogin = () => {
-    window.location.href = 'http://localhost:5000/api/youtube/login';
+    window.location.href = 'http://localhost:5000/auth/google/login';
   };
 
   // Check for token in URL on mount

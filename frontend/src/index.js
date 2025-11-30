@@ -9,3 +9,10 @@ root.render(
     <App />
   </React.StrictMode>
 );
+
+// Unregister any existing service workers to prevent conflicts
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.getRegistrations().then(registrations => {
+    registrations.forEach(registration => registration.unregister());
+  });
+}

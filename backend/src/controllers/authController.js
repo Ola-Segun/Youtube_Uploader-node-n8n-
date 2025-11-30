@@ -7,7 +7,7 @@ const { oauth2Client, revokeToken } = require('../services/oauthService');
 passport.use(new GoogleStrategy({
   clientID: process.env.GOOGLE_CLIENT_ID,
   clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-  callbackURL: `${process.env.BACKEND_URL}/api/youtube/callback`
+  callbackURL: `${process.env.BACKEND_URL}/auth/google/callback`
 }, async (accessToken, refreshToken, profile, done) => {
   try {
     let user = await User.findOne({ where: { googleId: profile.id } });
@@ -39,8 +39,14 @@ passport.deserializeUser(async (id, done) => {
   }
 });
 
-exports.login = passport.authenticate('google', { scope: ['profile', 'email', 'https://www.googleapis.com/auth/youtube.upload'] });
-
+exports.login = passport.authenticate('google', { 
+  scope: [
+    'https://www.googleapis.com/auth/youtube.upload',
+    'https://www.googleapis.com/auth/userinfo.email',
+    'https://www.googleapis.com/auth/userinfo.profile',
+    'openid'
+  ]
+});
 exports.callback = passport.authenticate('google', { failureRedirect: '/login' });
 
 exports.callbackSuccess = (req, res) => {

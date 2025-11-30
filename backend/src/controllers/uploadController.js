@@ -1,54 +1,48 @@
-const { upload } = require('../services/uploadService');
-const { uploadToYouTube } = require('../services/youtubeService');
-const { triggerN8nWorkflow } = require('../services/n8nService');
-const Video = require('../models/Video');
+const { sendToN8n } = require('../services/uploadService');
 const User = require('../models/User');
-const { io } = require('../../server');
+const Video = require('../models/Video');
+const { getIo } = require('../services/socketService');
 
-exports.uploadVideo = [
-  upload.single('video'),
-  async (req, res) => {
-    try {
-      const { title, description } = req.body;
-      const userId = req.user?.userId || 1; // Temporary for testing without auth
-      console.log('UploadController: Upload started', { title, description, file: req.file?.originalname, userId });
+exports.uploadVideo = async (req, res) => {
+  try {
+    const { title, description } = req.body;
+    const userId = req.user.userId;
 
-      // Save to DB first to get ID
-      const video = await Video.create({
-        userId,
-        title,
-        description,
-        fileUrl: '', // Direct upload to YouTube, no storage
-        status: 'uploading'
-      });
-      console.log('UploadController: Video record created', video.id);
-
-      // Get user for YouTube upload
-      const user = { email: 'test@example.com', accessToken: 'dummy', refreshToken: 'dummy' }; // Mock user for testing
-      console.log('UploadController: Using mock user', user.email);
-
-      // Emit progress before YouTube upload
-      // io.emit('uploadProgress', { uploadId: video.id, progress: 50 });
-      console.log('Progress: 50%');
-
-      // Upload directly to YouTube
-      console.log('UploadController: Starting YouTube upload');
-      const youtubeId = await uploadToYouTube(req.file.buffer, title, description, user);
-      console.log('UploadController: YouTube upload completed', youtubeId);
-      video.youtubeId = youtubeId;
-      video.status = 'completed';
-      video.progress = 100;
-      await video.save();
-      // io.emit('uploadProgress', { uploadId: video.id, progress: 100 });
-      console.log('Progress: 100%');
-
-      // Trigger n8n webhook
-      await triggerN8nWorkflow(video.id, user.email, 'completed');
-
-      res.status(201).json({ uploadId: video.id });
-    } catch (error) {
-      console.error(error);
-      res.status(500).json({ error: error.message });
+    // Get user email from database
+    const user = await User.findByPk(userId);
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
     }
+
+    // Create video record
+    console.log('Creating video record with data:', { userId, title, description, status: 'uploading', progress: 0 });
+    const video = await Video.create({
+      userId,
+      title,
+      description,
+      status: 'uploading',
+      progress: 0
+    });
+    console.log('Video record created successfully:', video.id);
+
+    // Send to n8n with userEmail
+    const n8nResponse = await sendToN8n(req.file, title, description, user.email);
+
+    // Update video with upload ID from n8n response
+    video.uploadId = n8nResponse.uploadId || video.id;
+    await video.save();
+
+    // Emit progress start
+    const io = getIo();
+    console.log('io object in uploadController:', io);
+    io.emit('uploadProgress', { uploadId: video.id, progress: 0, status: 'uploading' });
+
+    res.status(200).json({
+      uploadId: video.id,
+      message: 'Upload initiated successfully'
+    });
+  } catch (error) {
+    console.error('Upload error:', error);
+    res.status(500).json({ error: 'Upload failed: ' + error.message });
   }
-];
+};

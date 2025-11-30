@@ -5,15 +5,16 @@ const axios = require('axios');
 const oauth2Client = new OAuth2(
   process.env.GOOGLE_CLIENT_ID,
   process.env.GOOGLE_CLIENT_SECRET,
-  `${process.env.BACKEND_URL}/api/youtube/callback`
+  `${process.env.BACKEND_URL}/auth/google/callback`
 );
 
 const scopes = [
-  'https://www.googleapis.com/auth/youtube.upload',
-  'https://www.googleapis.com/auth/youtube',
-  'https://www.googleapis.com/auth/userinfo.email',
-  'https://www.googleapis.com/auth/userinfo.profile'
+    'https://www.googleapis.com/auth/youtube.upload',
+    'https://www.googleapis.com/auth/userinfo.email',
+    'https://www.googleapis.com/auth/userinfo.profile',
+    'openid'
 ];
+
 
 const revokeToken = async (token) => {
   try {

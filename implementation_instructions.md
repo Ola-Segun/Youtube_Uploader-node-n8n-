@@ -233,8 +233,8 @@ These instructions provide detailed, step-by-step code-level guidance for implem
    );
 
    const scopes = [
-     'https://www.googleapis.com/auth/youtube.upload',
-     'https://www.googleapis.com/auth/youtube',
+     'https://www.googleapis.com/auth/google.upload',
+     'https://www.googleapis.com/auth/google',
      'https://www.googleapis.com/auth/userinfo.email',
      'https://www.googleapis.com/auth/userinfo.profile'
    ];
@@ -304,7 +304,7 @@ These instructions provide detailed, step-by-step code-level guidance for implem
      }
    });
 
-   exports.login = passport.authenticate('google', { scope: ['profile', 'email', 'https://www.googleapis.com/auth/youtube.upload'] });
+   exports.login = passport.authenticate('google', { scope: ['profile', 'email', 'https://www.googleapis.com/auth/google.upload'] });
 
    exports.callback = passport.authenticate('google', { failureRedirect: '/login' });
 
