@@ -38,7 +38,6 @@ app.use(limiter);
 app.use('/auth/google', require('./src/routes/auth'));
 app.use('/upload', require('./src/routes/upload'));
 app.use('/videos', require('./src/routes/videos'));
-app.use('/internal', require('./src/routes/internal'));
 
 // Socket.io for progress tracking
 io.on('connection', (socket) => {
