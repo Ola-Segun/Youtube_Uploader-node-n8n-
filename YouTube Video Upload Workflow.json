@@ -1,0 +1,175 @@
+{
+  "nodes": [
+    {
+      "parameters": {
+        "resource": "video",
+        "operation": "upload",
+        "title": "={{ $json.body.title }}",
+        "regionCode": "NG",
+        "categoryId": "24",
+        "binaryProperty": "file",
+        "options": {
+          "privacyStatus": "private"
+        }
+      },
+      "id": "52bf31b3-b4f9-412d-802e-c2ded8c740fd",
+      "name": "Upload to YouTube",
+      "type": "n8n-nodes-base.youTube",
+      "typeVersion": 1,
+      "position": [
+        240,
+        1920
+      ],
+      "credentials": {
+        "youTubeOAuth2Api": {
+          "id": "G8WGUuZzvlkZMoMv",
+          "name": "YouTube account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "id": "36c38745-72d6-4ceb-800d-f34dc600b61a",
+      "name": "Respond Success",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [
+        752,
+        2048
+      ]
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "youtube-upload",
+        "responseMode": "lastNode",
+        "options": {}
+      },
+      "id": "a737c6ca-394e-4c88-b62a-02a882c93282",
+      "name": "Webhook3",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [
+        -288,
+        2048
+      ],
+      "webhookId": "youtube-upload-hook-2025"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "id": "15e5be51-29a6-416e-a606-2a37c60d5eb7",
+      "name": "Respond Error2",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [
+        240,
+        2192
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{$json[\"query\"][\"secret\"]}}",
+              "value2": "n8n-secret-yt-uploader-2025"
+            }
+          ]
+        }
+      },
+      "id": "23cebb9d-9d05-4669-ba14-ebfec0fa1494",
+      "name": "Validate Secret2",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [
+        -16,
+        2048
+      ]
+    },
+    {
+      "parameters": {
+        "fromEmail": "olaniyanpaul012@gmail.com",
+        "toEmail": "={{ $('Validate Secret2').item.json.body.userEmail }}",
+        "subject": "Your video upload is complete",
+        "text": "=Your video '{{ $('Webhook3').item.json.body.title}}' has been uploaded",
+        "options": {}
+      },
+      "id": "5a5bab36-fb59-419f-ae8f-e95144dbe0aa",
+      "name": "Send Notification Email6",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 1,
+      "position": [
+        512,
+        2048
+      ],
+      "credentials": {
+        "smtp": {
+          "id": "idkR5bBKSBV3Sgcy",
+          "name": "SMTP account"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Upload to YouTube": {
+      "main": [
+        [
+          {
+            "node": "Send Notification Email6",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook3": {
+      "main": [
+        [
+          {
+            "node": "Validate Secret2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Validate Secret2": {
+      "main": [
+        [
+          {
+            "node": "Upload to YouTube",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Respond Error2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Notification Email6": {
+      "main": [
+        [
+          {
+            "node": "Respond Success",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {},
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "9d7be66ecde120f5a16d69cbc4da3c110ce74f209fb482ffb6ba4df65ba2188b"
+  }
+}
