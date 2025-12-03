@@ -8,5 +8,5 @@ module.exports = {
   YOUTUBE_API_KEY: process.env.YOUTUBE_API_KEY,
   N8N_WEBHOOK_URL: process.env.REACT_APP_N8N_WEBHOOK_URL,
   N8N_SECRET: process.env.REACT_APP_N8N_SECRET,
-  FRONTEND_URL: process.env.FRONTEND_URL || 'http://localhost:3000'
+  FRONTEND_URL: process.env.FRONTEND_URL
 };

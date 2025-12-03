@@ -12,7 +12,7 @@ const Upload = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const socket = io('http://localhost:5000');
+    const socket = io(process.env.REACT_APP_API_BASE_URL);
     console.log('Upload page: Socket connected');
     socket.on('uploadProgress', (data) => {
       console.log('Upload page: Progress update received', data);

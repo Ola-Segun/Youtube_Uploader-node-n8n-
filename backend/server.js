@@ -13,13 +13,13 @@ const { setIo } = require('./src/services/socketService');
 const app = express();
 const server = http.createServer(app);
 const io = socketIo(server, {
-  cors: { origin: process.env.FRONTEND_URL || 'http://localhost:3000' }
+  cors: { origin: process.env.FRONTEND_URL }
 });
 console.log('io initialized in server.js:', typeof io, io ? 'defined' : 'undefined');
 setIo(io);
 
 app.use(helmet());
-app.use(cors({ origin: process.env.FRONTEND_URL || 'http://localhost:3000' }));
+app.use(cors({ origin: process.env.FRONTEND_URL }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 

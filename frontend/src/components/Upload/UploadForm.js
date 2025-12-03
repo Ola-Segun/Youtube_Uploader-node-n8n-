@@ -28,7 +28,7 @@ const UploadForm = ({ onUploadStart }) => {
 
     try {
       console.log('UploadForm: Sending to backend');
-      const response = await fetch('http://localhost:5000/upload', {
+      const response = await fetch(`${process.env.REACT_APP_API_BASE_URL}/upload`, {
         method: 'POST',
         body: formData,
         headers: {
