@@ -2,7 +2,8 @@
   "name": "yt-uploader",
   "version": "1.0.0",
   "scripts": {
-    "dev": "concurrently \"npm run dev --prefix backend\" \"npm start --prefix frontend\""
+    "build": "npm run build --prefix src/frontend",
+    "dev": "concurrently \"npm run dev --prefix backend\" \"npm start --prefix src/frontend\""
   },
   "devDependencies": {
     "concurrently": "^8.2.0"
